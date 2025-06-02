@@ -23,7 +23,7 @@ func Start(dbInstance *sqlx.DB, port string) error {
 		return fmt.Errorf("set migrations dialect: %w", err)
 	}
 
-	if err := goose.Up(dbInstance.Unsafe().DB, "migrations"); err != nil {
+	if err := goose.Up(dbInstance.Unsafe().DB, "internal/db/migrations"); err != nil {
 		return fmt.Errorf("run migrations: %w", err)
 	}
 
