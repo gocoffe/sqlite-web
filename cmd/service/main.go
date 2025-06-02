@@ -2,28 +2,46 @@ package service
 
 import (
 	"context"
+	"embed"
 	"fmt"
+	"html/template"
 	"log/slog"
+	"net/http"
 
-	"github.com/antlko/golitedb/internal/app/dbapp"
-	"github.com/joho/godotenv"
-	"github.com/sethvargo/go-envconfig"
+	"github.com/antlko/golitedb/internal/db"
+	"github.com/antlko/golitedb/internal/server/handler"
+	"github.com/jmoiron/sqlx"
 )
 
-func Start() {
-	// Load environment variables
-	if err := godotenv.Load(); err != nil {
-		slog.Warn("Failed to load .env file", "error", err)
+//go:embed templates/*
+var templatesFS embed.FS
+
+func Start(dbInstance *sqlx.DB, port string) error {
+	templates := template.Must(template.ParseFS(templatesFS, "templates/*"))
+
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+
+	userRepo := db.NewUserRepo(dbInstance)
+	tableRepo := db.NewTablesRepo(dbInstance)
+
+	loginHandler := handler.NewLoginHandler(templates, &userRepo)
+	dashboardHandler := handler.NewDashboardHandler(templates, dbInstance, &tableRepo)
+	homeHandler := handler.NewHomeHandler(templates)
+
+	http.HandleFunc("/", homeHandler.GetHome)
+
+	http.HandleFunc("POST /login", loginHandler.POSTHandle)
+	http.HandleFunc("POST /logout", loginHandler.POSTLogoutHandle)
+	http.HandleFunc("GET /login", loginHandler.GETHandle)
+
+	http.HandleFunc("GET /dashboard", dashboardHandler.GetDashboard)
+	http.HandleFunc("GET /dashboard/table", dashboardHandler.GetTableRows)
+	http.HandleFunc("POST /dashboard/console/exec", dashboardHandler.ExecSQL)
+
+	slog.InfoContext(context.Background(), "DB UI Server started!")
+
+	if err := http.ListenAndServe(fmt.Sprintf(":%s", port), nil); err != nil {
+		return fmt.Errorf("listen and serve: %w", err)
 	}
-
-	// Load application configuration
-	var cfg dbapp.Config
-	if err := envconfig.Process(context.Background(), &cfg); err != nil {
-		slog.Error("Failed to process configuration", "error", err)
-		return
-	}
-
-	println(fmt.Sprintf("%+v", cfg))
-
-	dbapp.Start(cfg)
+	return nil
 }
