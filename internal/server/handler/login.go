@@ -76,3 +76,38 @@ func (l Login) POSTLogoutHandle(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
+
+func (l Login) POSTChangePasswordHandle(w http.ResponseWriter, r *http.Request) {
+	ctx := context.Background()
+
+	cookie, err := r.Cookie("session_token")
+	if err != nil || cookie.Value == "" {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+
+	oldPass := r.FormValue("old_password")
+	newPass := r.FormValue("new_password")
+
+	// TODO: in future should be get user from the token
+	login := "admin"
+
+	user, err := l.userRepo.GetByLogin(ctx, login)
+	if err != nil {
+		http.Error(w, "User not found", http.StatusBadRequest)
+		return
+	}
+
+	if user.Password != oldPass {
+		http.Error(w, "Incorrect old password", http.StatusUnauthorized)
+		return
+	}
+
+	err = l.userRepo.UpdatePassword(ctx, login, newPass)
+	if err != nil {
+		http.Error(w, "Failed to update password", http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+}

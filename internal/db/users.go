@@ -47,3 +47,11 @@ func (u UserRepo) Insert(ctx context.Context, user User) error {
 	}
 	return nil
 }
+
+func (u UserRepo) UpdatePassword(ctx context.Context, login, newPassword string) error {
+	_, err := u.db.ExecContext(ctx, "UPDATE dbusers SET password = ? WHERE login = ?", newPassword, login)
+	if err != nil {
+		return fmt.Errorf("update psw: %w", err)
+	}
+	return nil
+}

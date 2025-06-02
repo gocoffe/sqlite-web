@@ -92,6 +92,18 @@
         <button onclick="loadTable('{{.}}')">{{.}}</button>
         {{end}}
     </div>
+
+    <hr>
+    <h3>Change Password</h3>
+    <form action="/change-password" method="POST">
+        <label for="oldPassword">Old Password:</label><br>
+        <input type="password" name="old_password" id="oldPassword" required><br><br>
+
+        <label for="newPassword">New Password:</label><br>
+        <input type="password" name="new_password" id="newPassword" required><br><br>
+
+        <button type="submit">Change Password</button>
+    </form>
 </aside>
 
 <main>

@@ -8,6 +8,10 @@ CREATE TABLE dbusers
 
     UNIQUE (login)
 );
+
+-- TODO: develop other method changing default password (also should be hashed)
+INSERT INTO dbusers (login, password)
+VALUES ('admin', 'admin');
 -- +goose StatementEnd
 
 -- +goose Down

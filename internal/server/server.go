@@ -12,9 +12,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-var templates = template.Must(template.ParseGlob("templates/*.html"))
-
-func Start(cfg Config, dbInstance *sqlx.DB) error {
+func Start(cfg Config, dbInstance *sqlx.DB, templates *template.Template) error {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	userRepo := db.NewUserRepo(dbInstance)
@@ -29,6 +27,7 @@ func Start(cfg Config, dbInstance *sqlx.DB) error {
 	http.HandleFunc("POST /login", loginHandler.POSTHandle)
 	http.HandleFunc("POST /logout", loginHandler.POSTLogoutHandle)
 	http.HandleFunc("GET /login", loginHandler.GETHandle)
+	http.HandleFunc("POST /change-password", loginHandler.POSTChangePasswordHandle)
 
 	http.HandleFunc("GET /dashboard", dashboardHandler.GetDashboard)
 	http.HandleFunc("GET /dashboard/table", dashboardHandler.GetTableRows)

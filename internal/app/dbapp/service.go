@@ -2,6 +2,7 @@ package dbapp
 
 import (
 	"fmt"
+	"html/template"
 
 	"github.com/antlko/golitedb/internal/db"
 	"github.com/antlko/golitedb/internal/logger"
@@ -19,7 +20,9 @@ func Start(cfg Config) error {
 		return fmt.Errorf("new db: %w", err)
 	}
 
-	if err = server.Start(cfg.Server, dbInstance); err != nil {
+	templates := template.Must(template.ParseGlob("templates/*.html"))
+
+	if err = server.Start(cfg.Server, dbInstance, templates); err != nil {
 		return fmt.Errorf("start server: %w", err)
 	}
 	return nil
