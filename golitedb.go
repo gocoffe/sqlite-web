@@ -13,7 +13,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-//go:embed ./../../templates/*
+//go:embed templates/*
 var templatesFS embed.FS
 
 func Start(dbInstance *sqlx.DB, port string) error {
