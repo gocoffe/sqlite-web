@@ -5,6 +5,7 @@ import (
 	"html/template"
 
 	"github.com/antlko/golitedb/internal/db"
+	"github.com/antlko/golitedb/internal/jwt"
 	"github.com/antlko/golitedb/internal/logger"
 	"github.com/antlko/golitedb/internal/server"
 )
@@ -21,8 +22,9 @@ func Start(cfg Config) error {
 	}
 
 	templates := template.Must(template.ParseGlob("templates/*.html"))
+	authorizer := jwt.NewAuthorizer(cfg.Authorizer)
 
-	if err = server.Start(cfg.Server, dbInstance, templates); err != nil {
+	if err = server.Start(cfg.Server, dbInstance, templates, authorizer); err != nil {
 		return fmt.Errorf("start server: %w", err)
 	}
 	return nil

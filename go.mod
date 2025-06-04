@@ -9,6 +9,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.28
 	github.com/pressly/goose/v3 v3.24.3
 	github.com/sethvargo/go-envconfig v1.3.0
+	golang.org/x/crypto v0.38.0
 )
 
 require (

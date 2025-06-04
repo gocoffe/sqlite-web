@@ -8,21 +8,26 @@ import (
 	"time"
 
 	"github.com/antlko/golitedb/internal/db"
+	"github.com/antlko/golitedb/internal/jwt"
 )
 
 type Login struct {
-	tmpl     *template.Template
-	userRepo *db.UserRepo
+	tmpl       *template.Template
+	userRepo   *db.UserRepo
+	authorizer *jwt.Authorizer
+	hasher     *jwt.PasswordHasher
 }
 
-func NewLoginHandler(tmpl *template.Template, userRepo *db.UserRepo) Login {
+func NewLoginHandler(tmpl *template.Template, userRepo *db.UserRepo, authorizer *jwt.Authorizer, hasher *jwt.PasswordHasher) Login {
 	return Login{
-		tmpl:     tmpl,
-		userRepo: userRepo,
+		tmpl:       tmpl,
+		userRepo:   userRepo,
+		authorizer: authorizer,
+		hasher:     hasher,
 	}
 }
 
-func (l Login) POSTHandle(w http.ResponseWriter, r *http.Request) {
+func (l Login) POSTLogin(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 
 	login := r.FormValue("login")
@@ -32,21 +37,30 @@ func (l Login) POSTHandle(w http.ResponseWriter, r *http.Request) {
 
 	dbUser, err := l.userRepo.GetByLogin(ctx, login)
 	if err != nil {
-		println(err.Error())
 		respondError(l.tmpl, w, "login.html", "Incorrect Credentials!")
 		return
 	}
 
-	// TODO: Dummy password check, improve with hashing password
-	if password != dbUser.Password {
-		respondError(l.tmpl, w, "login.html", "Incorrect Credentials!")
-		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+	if dbUser.Login == "admin" && dbUser.Password == "admin" {
+		// Skipping. Can be improved in the future, but now needed only for the first activation
+	} else {
+		if !l.hasher.VerifyPassword(password, dbUser.Password) {
+			respondError(l.tmpl, w, "login.html", "Incorrect Credentials!")
+			http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+			return
+		}
+	}
+
+	sessionToken, err := l.authorizer.CreateToken(login)
+	if err != nil {
+		respondError(l.tmpl, w, "login.html", "Internal Server Error!")
+		http.Error(w, "Invalid credentials", http.StatusInternalServerError)
 		return
 	}
-	// Set cookie
+
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_token",
-		Value:    "some my sess token", // TODO: create normal JWT token
+		Value:    sessionToken,
 		Path:     "/",
 		HttpOnly: true,
 		Expires:  time.Now().Add(24 * time.Hour),
@@ -80,8 +94,8 @@ func (l Login) POSTLogoutHandle(w http.ResponseWriter, r *http.Request) {
 func (l Login) POSTChangePasswordHandle(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 
-	cookie, err := r.Cookie("session_token")
-	if err != nil || cookie.Value == "" {
+	sessionTokenCookie, err := r.Cookie("session_token")
+	if err != nil || sessionTokenCookie.Value == "" {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
@@ -89,8 +103,11 @@ func (l Login) POSTChangePasswordHandle(w http.ResponseWriter, r *http.Request) 
 	oldPass := r.FormValue("old_password")
 	newPass := r.FormValue("new_password")
 
-	// TODO: in future should be get user from the token
-	login := "admin"
+	ok, login, err := l.authorizer.Validate(sessionTokenCookie.Value)
+	if err != nil || !ok {
+		http.Error(w, "User invalid", http.StatusBadRequest)
+		return
+	}
 
 	user, err := l.userRepo.GetByLogin(ctx, login)
 	if err != nil {
@@ -103,7 +120,13 @@ func (l Login) POSTChangePasswordHandle(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	err = l.userRepo.UpdatePassword(ctx, login, newPass)
+	hashedPassword, err := l.hasher.HashPassword(newPass)
+	if err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	err = l.userRepo.UpdatePassword(ctx, login, hashedPassword)
 	if err != nil {
 		http.Error(w, "Failed to update password", http.StatusInternalServerError)
 		return

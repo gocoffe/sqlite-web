@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/antlko/golitedb/internal/db"
+	"github.com/antlko/golitedb/internal/jwt"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -17,18 +18,11 @@ type DashboardHandler struct {
 	tablesRepo *db.TablesRepo
 }
 
-func NewDashboardHandler(tmpl *template.Template, dbInstance *sqlx.DB, tablesRepo *db.TablesRepo) DashboardHandler {
+func NewDashboardHandler(tmpl *template.Template, dbInstance *sqlx.DB, tablesRepo *db.TablesRepo, j *jwt.Authorizer) DashboardHandler {
 	return DashboardHandler{tmpl: tmpl, dbInstance: dbInstance, tablesRepo: tablesRepo}
 }
 
 func (d DashboardHandler) GetDashboard(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie("session_token")
-	// TODO: do proper JWT validation
-	if err != nil || cookie.Value == "" {
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
-		return
-	}
-
 	tables, err := d.tablesRepo.GetAllDBTables()
 	if err != nil {
 		d.tmpl.ExecuteTemplate(w, "dashboard.html", map[string]interface{}{
@@ -41,7 +35,6 @@ func (d DashboardHandler) GetDashboard(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// GET /dashboard/table?name=your_table_name — данные таблицы
 func (d DashboardHandler) GetTableRows(w http.ResponseWriter, r *http.Request) {
 	tableName := r.URL.Query().Get("name")
 	if tableName == "" {

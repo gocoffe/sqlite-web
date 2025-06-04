@@ -32,36 +32,6 @@ func NewAuthorizer(config Config) Authorizer {
 	}
 }
 
-func (a Authorizer) CreateTokens(username string) (Tokens, error) {
-	accessToken, err := a.CreateToken(username, a.accessDuration)
-	if err != nil {
-		return Tokens{}, fmt.Errorf("create access token: %w", err)
-	}
-	refreshToken, err := a.CreateToken(username, a.refreshDuration)
-	if err != nil {
-		return Tokens{}, fmt.Errorf("create refresh token: %w", err)
-	}
-	return Tokens{
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
-	}, nil
-}
-
-func (a Authorizer) ValidateAndUpdate(token string) (Tokens, error) {
-	ok, identity, err := a.verifyToken(token)
-	if err != nil {
-		return Tokens{}, fmt.Errorf("token verification: %w")
-	}
-	if !ok {
-		return Tokens{}, fmt.Errorf("token not verified")
-	}
-	tokens, err := a.CreateTokens(identity)
-	if err != nil {
-		return Tokens{}, fmt.Errorf("tokens not updated: %w", err)
-	}
-	return tokens, nil
-}
-
 func (a Authorizer) Validate(token string) (bool, string, error) {
 	ok, identity, err := a.verifyToken(token)
 	if err != nil {
@@ -70,11 +40,11 @@ func (a Authorizer) Validate(token string) (bool, string, error) {
 	return ok, identity, nil
 }
 
-func (a Authorizer) CreateToken(username string, hours int64) (string, error) {
+func (a Authorizer) CreateToken(username string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
 			"username": username,
-			"exp":      time.Now().Add(time.Hour * time.Duration(hours)).Unix(),
+			"exp":      time.Now().Add(time.Hour * time.Duration(a.accessDuration)).Unix(),
 		})
 
 	tokenString, err := token.SignedString(a.secretKey)
