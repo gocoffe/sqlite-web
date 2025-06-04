@@ -38,8 +38,8 @@ func Start(cfg Config, dbInstance *sqlx.DB, templates *template.Template, author
 	http.HandleFunc("POST /change-password", loginHandler.POSTChangePasswordHandle)
 
 	http.HandleFunc("GET /dashboard", middleware.NewAuthMiddleware(&authorizer, dashboardHandler.GetDashboard).Handle)
-	http.HandleFunc("GET /dashboard/table", dashboardHandler.GetTableRows)
-	http.HandleFunc("POST /dashboard/console/exec", dashboardHandler.ExecSQL)
+	http.HandleFunc("GET /dashboard/table", middleware.NewAuthMiddleware(&authorizer, dashboardHandler.GetTableRows).Handle)
+	http.HandleFunc("POST /dashboard/console/exec", middleware.NewAuthMiddleware(&authorizer, dashboardHandler.ExecSQL).Handle)
 
 	slog.InfoContext(context.Background(), "DB WebUI Server started!")
 
