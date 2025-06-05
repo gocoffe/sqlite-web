@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log/slog"
+	"net/http"
 
 	"github.com/antlko/golitedb/internal/app/dbapp"
 	"github.com/joho/godotenv"
@@ -19,6 +20,8 @@ func main() {
 		slog.Error("Failed to process configuration", "error", err)
 		return
 	}
+
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	err := dbapp.Start(cfg)
 	if err != nil {

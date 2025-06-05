@@ -19,8 +19,6 @@ const (
 )
 
 func Start(cfg Config, dbInstance *sqlx.DB, templates *template.Template, authorizer jwt.Authorizer) error {
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
-
 	hasher := jwt.NewPasswordHasher(defaultHashCost)
 
 	userRepo := db.NewUserRepo(dbInstance)
