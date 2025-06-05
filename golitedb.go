@@ -4,6 +4,7 @@ import (
 	"embed"
 	"fmt"
 	"html/template"
+	"net/http"
 
 	"github.com/antlko/golitedb/internal/jwt"
 	"github.com/antlko/golitedb/internal/server"
@@ -56,6 +57,7 @@ func Start(params Params) error {
 	}
 
 	templates := template.Must(template.ParseFS(templatesFS, "templates/*"))
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	jwtAuthorizer := jwt.NewAuthorizer(jwt.Config{
 		JwtSecretKey:        "",
