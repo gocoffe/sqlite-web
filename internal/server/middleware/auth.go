@@ -27,8 +27,8 @@ func (a Auth) Handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	validate, identity, err := a.authorizer.Validate(cookie.Value)
-	if err != nil && !validate {
+	ok, identity, err := a.authorizer.Validate(cookie.Value)
+	if err != nil || !ok {
 		http.Error(w, "User not authorized", http.StatusUnauthorized)
 		return
 	}

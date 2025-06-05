@@ -43,7 +43,7 @@ func Start(params Params) error {
 		params.AppConfig.ServerPort = defaultPort
 	}
 	if params.AppConfig.SessionSecretKey == "" {
-		params.AppConfig.ServerPort = defaultSessionSecretKey
+		params.AppConfig.SessionSecretKey = defaultSessionSecretKey
 	}
 	if params.AppConfig.SessionTokenHours == 0 {
 		params.AppConfig.SessionTokenHours = defaultSessionExpTimeMinutes
