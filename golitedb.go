@@ -33,9 +33,9 @@ type Params struct {
 }
 
 type Config struct {
-	ServerPort        string
-	SessionSecretKey  string
-	SessionTokenHours int64
+	ServerPort          string
+	SessionSecretKey    string
+	SessionTokenMinutes int64
 }
 
 func Start(params Params) error {
@@ -45,8 +45,8 @@ func Start(params Params) error {
 	if params.AppConfig.SessionSecretKey == "" {
 		params.AppConfig.SessionSecretKey = defaultSessionSecretKey
 	}
-	if params.AppConfig.SessionTokenHours == 0 {
-		params.AppConfig.SessionTokenHours = defaultSessionExpTimeMinutes
+	if params.AppConfig.SessionTokenMinutes == 0 {
+		params.AppConfig.SessionTokenMinutes = defaultSessionExpTimeMinutes
 	}
 
 	// Apply migrations
@@ -64,8 +64,8 @@ func Start(params Params) error {
 	http.Handle("/static/", http.FileServer(http.FS(staticFiles)))
 
 	jwtAuthorizer := jwt.NewAuthorizer(jwt.Config{
-		JwtSecretKey:        "",
-		JwtAccessTokenHours: 0,
+		JwtSecretKey:        params.AppConfig.SessionSecretKey,
+		JwtAccessTokenHours: params.AppConfig.SessionTokenMinutes,
 	})
 
 	err := server.Start(
