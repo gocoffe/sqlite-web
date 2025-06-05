@@ -24,6 +24,9 @@ var templatesFS embed.FS
 //go:embed internal/db/migrations/*.sql
 var embedMigrations embed.FS
 
+//go:embed static/*
+var staticFiles embed.FS
+
 type Params struct {
 	DBInstance *sqlx.DB
 	AppConfig  Config
@@ -57,7 +60,8 @@ func Start(params Params) error {
 	}
 
 	templates := template.Must(template.ParseFS(templatesFS, "templates/*"))
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.FS(staticFiles))))
 
 	jwtAuthorizer := jwt.NewAuthorizer(jwt.Config{
 		JwtSecretKey:        "",
