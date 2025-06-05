@@ -61,7 +61,7 @@ func Start(params Params) error {
 
 	templates := template.Must(template.ParseFS(templatesFS, "templates/*"))
 
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.FS(staticFiles))))
+	http.Handle("/static/", http.FileServer(http.FS(staticFiles)))
 
 	jwtAuthorizer := jwt.NewAuthorizer(jwt.Config{
 		JwtSecretKey:        "",
