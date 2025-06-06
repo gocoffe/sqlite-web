@@ -1,4 +1,4 @@
-module github.com/antlko/golitedb
+module github.com/gocoffe/sqlite-web
 
 go 1.24.2
 
