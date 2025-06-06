@@ -18,11 +18,9 @@
 
 ## ✨ Features
 
-- 🚀 **Fast & Efficient** - Built with performance in mind
-- 🔧 **Easy to Use** - Simple CLI interface
 - 📦 **Lightweight** - Minimal dependencies
+- 🔧 **Easy to Use** - Simple CLI interface
 - 🔒 **Secure** - Security-first approach
-- 🌐 **Cross-platform** - Works on Windows, macOS, and Linux
 
 ## 🚀 Quick Start
 ```bash
