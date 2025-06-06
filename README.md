@@ -1,9 +1,6 @@
 # Tool Name
 
 <div align="center">
-
-    ![Logo](./img.png)
-
     **A brief, compelling description of what your tool does**
 
     [Features](#features) •
