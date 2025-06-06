@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/antlko/golitedb/internal/app/dbapp"
+	"github.com/gocoffe/sqlite-web/internal/app/dbapp"
 	"github.com/joho/godotenv"
 	"github.com/sethvargo/go-envconfig"
 )

@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"html/template"
 
-	"github.com/antlko/golitedb/internal/db"
-	"github.com/antlko/golitedb/internal/jwt"
-	"github.com/antlko/golitedb/internal/logger"
-	"github.com/antlko/golitedb/internal/server"
+	"github.com/gocoffe/sqlite-web/internal/db"
+	"github.com/gocoffe/sqlite-web/internal/jwt"
+	"github.com/gocoffe/sqlite-web/internal/logger"
+	"github.com/gocoffe/sqlite-web/internal/server"
 )
 
 func Start(cfg Config) error {

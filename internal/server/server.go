@@ -7,10 +7,10 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/antlko/golitedb/internal/db"
-	"github.com/antlko/golitedb/internal/jwt"
-	"github.com/antlko/golitedb/internal/server/handler"
-	"github.com/antlko/golitedb/internal/server/middleware"
+	"github.com/gocoffe/sqlite-web/internal/db"
+	"github.com/gocoffe/sqlite-web/internal/jwt"
+	"github.com/gocoffe/sqlite-web/internal/server/handler"
+	"github.com/gocoffe/sqlite-web/internal/server/middleware"
 	"github.com/jmoiron/sqlx"
 )
 

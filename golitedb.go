@@ -6,8 +6,8 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/antlko/golitedb/internal/jwt"
-	"github.com/antlko/golitedb/internal/server"
+	"github.com/gocoffe/sqlite-web/internal/jwt"
+	"github.com/gocoffe/sqlite-web/internal/server"
 	"github.com/jmoiron/sqlx"
 	"github.com/pressly/goose/v3"
 )
