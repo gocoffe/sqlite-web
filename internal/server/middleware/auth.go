@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/antlko/golitedb/internal/jwt"
+	"github.com/gocoffe/sqlite-web/internal/jwt"
 )
 
 type Auth struct {

@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/antlko/golitedb/internal/db"
-	"github.com/antlko/golitedb/internal/jwt"
+	"github.com/gocoffe/sqlite-web/internal/db"
+	"github.com/gocoffe/sqlite-web/internal/jwt"
 )
 
 type Login struct {
