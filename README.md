@@ -1,15 +1,20 @@
 # Tool Name
 
-<div align="center">
-    **A brief, compelling description of what your tool does**
+<p align="center">
+    <img src="./img.png" alt="Logo" width="150">
+</p>
 
-    [Features](#features) •
-    [Installation](#installation) •
-    [Usage](#usage) •
-    [Documentation](#documentation) •
-    [Contributing](#contributing)
+<p align="center">
+    <strong>A brief, compelling description of what your tool does</strong>
+</p>
 
-</div>
+<p align="center">
+    <a href="#features">Features</a> •
+    <a href="#installation">Installation</a> •
+    <a href="#usage">Usage</a> •
+    <a href="#documentation">Documentation</a> •
+    <a href="#contributing">Contributing</a>
+</p>
 
 ---
 
