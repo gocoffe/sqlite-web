@@ -26,8 +26,3 @@
 
 ## 🚀 Quick Start
 ```bash
-# Install
-go install github.com/username/tool@latest
-
-# Run
-tool --help

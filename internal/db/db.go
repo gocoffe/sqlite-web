@@ -13,8 +13,7 @@ import (
 )
 
 type Config struct {
-	Folder       string `env:"DB_FOLDER"`              // Directory for SQLite database
-	DBName       string `env:"DB_NAME,default=sqlite"` // SQLite database file name (without extension)
+	FilePath     string `env:"DB_FILE_PATH,default=sqlite.db"`
 	MaxIdleConns int    `env:"DB_MAX_IDLE_CONNS,default=2"`
 	MaxOpenConns int    `env:"DB_MAX_OPEN_CONNS,default=4"`
 	LogLevel     string `env:"DB_LOG_LEVEL,default=error"`
@@ -24,15 +23,8 @@ type Config struct {
 var embedMigrations embed.FS
 
 func NewDB(cfg Config) (*sqlx.DB, error) {
-	// Ensure the folder exists
-	if cfg.Folder != "" {
-		if err := os.MkdirAll(cfg.Folder, os.ModePerm); err != nil {
-			return nil, fmt.Errorf("create folder: %w", err)
-		}
-	}
-
 	// Database file path
-	dbPath := filepath.Join(cfg.Folder, cfg.DBName+".db")
+	dbPath := filepath.Join(cfg.FilePath)
 
 	// Check if the database file exists, create if not
 	if _, err := os.Stat(dbPath); os.IsNotExist(err) {

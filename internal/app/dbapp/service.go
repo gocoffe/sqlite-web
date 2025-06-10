@@ -12,8 +12,7 @@ import (
 
 func Start(cfg Config) error {
 	logger.InitLogger(logger.Config{
-		AppName:  cfg.ApplicationName,
-		Hostname: cfg.Hostname,
+		AppName: cfg.ApplicationName,
 	})
 
 	dbInstance, err := db.NewDB(cfg.DB)

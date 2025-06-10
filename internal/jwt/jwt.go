@@ -8,9 +8,8 @@ import (
 )
 
 type Config struct {
-	JwtSecretKey         string `env:"JWT_SECRET_KEY"`
-	JwtAccessTokenHours  int64  `env:"JWT_ACCESS_TOKEN_HOURS,default=24"`
-	JwtRefreshTokenHours int64  `env:"JWT_REFRESH_TOKEN_HOURS,default=168"`
+	JwtSecretKey        string `env:"JWT_SECRET_KEY"`
+	JwtAccessTokenHours int64  `env:"JWT_ACCESS_TOKEN_HOURS,default=24"`
 }
 
 type Tokens struct {
@@ -26,9 +25,8 @@ type Authorizer struct {
 
 func NewAuthorizer(config Config) Authorizer {
 	return Authorizer{
-		secretKey:       []byte(config.JwtSecretKey),
-		accessDuration:  config.JwtAccessTokenHours,
-		refreshDuration: config.JwtRefreshTokenHours,
+		secretKey:      []byte(config.JwtSecretKey),
+		accessDuration: config.JwtAccessTokenHours,
 	}
 }
 
