@@ -7,7 +7,6 @@ import (
 )
 
 type Config struct {
-	Hostname        string `env:"HOSTNAME"`
 	ApplicationName string `env:"APPLICATION_NAME"`
 
 	DB         db.Config
